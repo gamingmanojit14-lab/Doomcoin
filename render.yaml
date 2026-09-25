@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: doomcoin-bootstrap
+    runtime: node
+    rootDir: bootstrap
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      # GitHub-এ seeds.json রাখলে সেটার raw URL (ঐচ্ছিক)
+      - key: SEEDS_GITHUB_RAW
+        sync: false
