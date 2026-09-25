@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doom Coin — Decentralized Wallet & Miner</title>
+  <meta name="description" content="Doom Coin — একটি সম্পূর্ণ ডিসেন্ট্রালাইজড ক্রিপ্টোকারেন্সি" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 🌐 ল্যান্ডিং পেজ -->
+  <section id="landing" class="landing">
+    <div class="hero">
+      <h1>🔥 Doom Coin</h1>
+      <p class="tagline">সম্পূর্ণ ডিসেন্ট্রালাইজড। কোনো সার্ভার নেই। শুধু আপনি আর নেটওয়ার্ক।</p>
+
+      <div class="cta">
+        <button class="btn primary" onclick="startMode('wallet')">🪙 ওয়ালেট খুলুন</button>
+        <button class="btn secondary" onclick="startMode('miner')">⛏️ মাইনিং শুরু</button>
+        <button class="btn both" onclick="startMode('both')">🔗 দুটোই একসাথে</button>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat"><span>🌐 নোড</span><b id="stat-nodes">0</b></div>
+        <div class="stat"><span>⚡ ব্লক</span><b id="stat-height">0</b></div>
+        <div class="stat"><span>💰 সাপ্লাই</span><b id="stat-supply">0</b></div>
+        <div class="stat"><span>🔗 পিয়ার</span><b id="stat-peers">0</b></div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>🪙 ওয়ালেট</h3>
+          <p>আপনার প্রাইভেট কী শুধু আপনার ব্রাউজারে থাকে। কোনো সার্ভারে যায় না।</p>
+        </div>
+        <div class="info-card">
+          <h3>⛏️ মাইনিং</h3>
+          <p>আপনার কম্পিউটার দিয়েই মাইনিং হবে। সরাসরি নেটওয়ার্কে রিওয়ার্ড পাবেন।</p>
+        </div>
+        <div class="info-card">
+          <h3>🌐 নোড</h3>
+          <p>একটি ক্লিকেই আপনার কম্পিউটার নেটওয়ার্কের অংশ হয়ে যাবে।</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🚗 ড্যাশবোর্ড -->
+  <section id="dashboard" class="dashboard hidden">
+    <header>
+      <h2>🔥 Doom Coin</h2>
+      <nav class="tabs">
+        <button data-tab="wallet" class="tab active">🪙 ওয়ালেট</button>
+        <button data-tab="miner" class="tab">⛏️ মাইনার</button>
+        <button data-tab="node" class="tab">🌐 নোড</button>
+        <button data-tab="settings" class="tab">⚙️ সেটিংস</button>
+      </nav>
+      <div class="status-pill" id="net-status">🔴 অফলাইন</div>
+    </header>
+
+    <!-- ওয়ালেট ট্যাব -->
+    <div id="tab-wallet" class="tab-content active">
+      <div class="card">
+        <div class="card-head">
+          <h3>আপনার ওয়ালেট</h3>
+          <span class="badge" id="wallet-type">লোড হচ্ছে...</span>
+        </div>
+        <label>ঠিকানা (Address)</label>
+        <div class="copy-box">
+          <input id="wallet-address" readonly placeholder="—" />
+          <button onclick="copyText('wallet-address')">📋</button>
+        </div>
+        <label>ব্যালেন্স</label>
+        <div class="balance" id="wallet-balance">0.00000000 <span>DOOM</span></div>
+        <div class="balance-sub" id="wallet-pending">অপেক্ষমাণ: 0.00000000</div>
+      </div>
+
+      <div class="card">
+        <h3>💸 কয়েন পাঠান</h3>
+        <input id="send-to" placeholder="প্রাপকের ঠিকানা (DOOM...)" />
+        <div class="input-row">
+          <input id="send-amount" type="number" step="0.00000001" min="0" placeholder="পরিমাণ" />
+          <span class="unit">DOOM</span>
+        </div>
+        <div class="fee-row">
+          <span>ফি: 0.0001 DOOM</span>
+          <span id="send-total">মোট: 0.0001 DOOM</span>
+        </div>
+        <button class="btn primary" onclick="sendCoins()">পাঠান</button>
+      </div>
+
+      <div class="card">
+        <h3>🛡️ সিকিউরিটি</h3>
+        <button class="btn secondary" onclick="backupWallet()">💾 সিড ফ্রেজ ব্যাকআপ</button>
+        <button class="btn secondary" onclick="showRecovery()">🔑 রিকভারি</button>
+        <button class="btn danger" onclick="lockWallet()">🔒 ওয়ালেট লক</button>
+      </div>
+
+      <div class="card">
+        <h3>📜 সাম্প্রতিক লেনদেন</h3>
+        <div id="tx-list" class="tx-list">
+          <div class="empty">কোনো লেনদেন নেই</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- মাইনার ট্যাব -->
+    <div id="tab-miner" class="tab-content">
+      <div class="card">
+        <div class="card-head">
+          <h3>⛏️ মাইনিং কন্ট্রোল</h3>
+          <span class="badge" id="miner-status">বন্ধ</span>
+        </div>
+        <button id="mine-toggle" class="btn primary big" onclick="toggleMining()">▶️ মাইনিং শুরু</button>
+
+        <div class="miner-stats">
+          <div class="stat-box"><span>হ্যাশরেট</span><b id="hashrate">0 H/s</b></div>
+          <div class="stat-box"><span>শেয়ার</span><b id="shares">0</b></div>
+          <div class="stat-box"><span>আয় (২৪ঘ)</span><b id="earnings">0 DOOM</b></div>
+          <div class="stat-box"><span>লাস্ট ব্লক</span><b id="last-block">—</b></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📊 হ্যাশরেট রিপোর্ট</h3>
+        <canvas id="hashrate-chart"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>⚙️ মাইনার কনফিগারেশন</h3>
+        <label>থ্রেড সংখ্যা</label>
+        <input id="miner-threads" type="number" min="1" max="32" value="2" />
+        <label>মাইনিং অ্যাড্রেস</label>
+        <input id="miner-address" readonly placeholder="ওয়ালেট অ্যাড্রেস" />
+        <button class="btn secondary" onclick="syncMinerAddress()">🔄 ওয়ালেট থেকে সিঙ্ক</button>
+      </div>
+    </div>
+
+    <!-- নোড ট্যাব -->
+    <div id="tab-node" class="tab-content">
+      <div class="card">
+        <h3>🌐 নেটওয়ার্ক স্ট্যাটাস</h3>
+        <div class="miner-stats">
+          <div class="stat-box"><span>পিয়ার</span><b id="peer-count">0</b></div>
+          <div class="stat-box"><span>ব্লক উচ্চতা</span><b id="node-height">0</b></div>
+          <div class="stat-box"><span>বুটস্ট্র্যাপ</span><b id="bootstrap-status">—</b></div>
+          <div class="stat-box"><span>লেটেন্সি</span><b id="latency">—</b></div>
+        </div>
+        <button class="btn primary" onclick="connectNode()">🔗 নেটওয়ার্কে যোগ দিন</button>
+      </div>
+
+      <div class="card">
+        <h3>📝 আপনার নোড রেজিস্টার করুন</h3>
+        <p class="hint">আপনার কম্পিউটারে Doom Coin নোড চালু থাকলে এখানে IP দিয়ে রেজিস্টার করুন।</p>
+        <input id="node-ip" placeholder="পাবলিক IP (যেমন: 203.45.67.89)" />
+        <input id="node-region" placeholder="রিজিয়ন (যেমন: india)" />
+        <button class="btn secondary" onclick="registerNode()">✅ রেজিস্টার</button>
+      </div>
+
+      <div class="card">
+        <h3>🚗 বুটস্ট্র্যাপ নোড</h3>
+        <div class="copy-box">
+          <input id="bootstrap-url" readonly />
+          <button onclick="copyText('bootstrap-url')">📋</button>
+        </div>
+        <p class="hint">এটি শুধু নতুন নোডকে নেটওয়ার্কে পৌঁছে দেয়। এটি বন্ধ হলেও নেটওয়ার্ক চলে।</p>
+      </div>
+    </div>
+
+    <!-- সেটিংস ট্যাব -->
+    <div id="tab-settings" class="tab-content">
+      <div class="card">
+        <h3>⚙️ সেটিংস</h3>
+        <label>বুটস্ট্র্যাপ URL</label>
+        <input id="setting-bootstrap" placeholder="https://..." />
+        <label>নোড RPC URL</label>
+        <input id="setting-rpc" placeholder="http://localhost:3334" />
+        <label>রিজিয়ন</label>
+        <select id="setting-region">
+          <option value="any">যেকোনো</option>
+          <option value="india">ভারত</option>
+          <option value="singapore">সিঙ্গাপুর</option>
+          <option value="germany">জার্মানি</option>
+          <option value="usa">আমেরিকা</option>
+        </select>
+        <button class="btn primary" onclick="saveSettings()">💾 সেভ করুন</button>
+      </div>
+
+      <div class="card">
+        <h3>📊 ডেটা</h3>
+        <button class="btn secondary" onclick="exportWallet()">📤 ওয়ালেট এক্সপোর্ট</button>
+        <button class="btn secondary" onclick="importWallet()">📥 ওয়ালেট ইমপোর্ট</button>
+        <button class="btn danger" onclick="resetWallet()">🗑️ সব রিসেট</button>
+      </div>
+
+      <div class="card">
+        <h3>ℹ️ তথ্য</h3>
+        <div class="info-row"><span>সংস্করণ</span><b>v1.0.0</b></div>
+        <div class="info-row"><span>নেটওয়ার্ক</span><b>doomcoin-mainnet</b></div>
+        <div class="info-row"><span>ফ্রন্টএন্ড</span><b>GitHub Pages</b></div>
+        <div class="info-row"><span>বুটস্ট্র্যাপ</span><b>Render</b></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="wallet.js"></script>
+  <script src="miner.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
