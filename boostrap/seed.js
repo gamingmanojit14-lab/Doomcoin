@@ -1,0 +1,5 @@
+{
+  "network": "doomcoin-mainnet",
+  "updated": "2026-09-25T00:00:00Z",
+  "seeds": []
+}
